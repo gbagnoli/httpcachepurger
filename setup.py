@@ -2,11 +2,11 @@ from setuptools import setup
 
 setup(
     name='varnishpurge',
-    version='0.1.1',
+    version='0.1.2',
     author='Giacomo Bagnoli',
     author_email='info@asidev.com',
     packages=['varnishpurge'],
-    url='http://code.asidev.net/varnishpurge/',
+    url='https://code.asidev.net/projects/varnishpurge',
     license='LICENSE.txt',
     description='Varnish HTTP purge library',
     long_description=open('README.txt').read(),
