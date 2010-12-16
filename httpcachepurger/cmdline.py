@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+import logging
 from optparse import OptionParser
 from httpcachepurger import HTTPCachePurger
 
@@ -26,6 +27,8 @@ def get_parser(host, port, strict, timeout):
                       'cannot be parsed as a valid HTTP/1.0 or 1.1 ' + \
                       'status line',
                       metavar="STRICT", default=strict)
+    parser.add_option("-v", "--verbose", action="count", help="Increase " +\
+                      "verbosity. Can be specified multiple times", dest="verbosity")
 
     return parser
 
@@ -33,8 +36,13 @@ def main():
     """ Main entrance point """
     parser = get_parser(host='localhost', port=80, strict=False, timeout=10)
     (opts, args) = parser.parse_args()
+    level = logging.WARN if opts.verbosity == 0 else \
+            logging.INFO if opts.verbosity == 1 else logging.DEBUG
+    logging.basicConfig(level=level)
     if not args:
         parser.error("No urls to purge")
     client = HTTPCachePurger(opts.hostname, opts.server, opts.port, 
                              opts.strict, opts.timeout)
-    client.purge(args)
+    results = client.purge(args, True)
+    for result in results:
+        logging.debug(result)

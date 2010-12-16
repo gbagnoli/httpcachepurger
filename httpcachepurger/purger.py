@@ -29,41 +29,42 @@ class HTTPCachePurger(object):
         self.port = port
         self.strict = strict
         self.timeout = timeout
-        self.processes = []
 
-    def __call__(self, url):
+    def __purge(self, queue, url):
         self.log.info("PURGE %s Hostname: %s @%s", url, self.hostname, self.server)
         conn = HTTPConnection(self.server, self.port, self.strict, self.timeout)
         conn.request("PURGE", url, headers={"Host" : self.hostname})
         response = conn.getresponse()
         self.log.debug("'%s': %s %s", url, response.status, response.reason)
+        queue.put((url, response.status, response.reason))
 
-    def purge(self, urls, multiprocess=True):
+    def purge(self, urls, multiprocess=False):
         """ Request the server to purge all the given urls
 
-            :param urls: an iterable containing all the urls to purge as absolute 
+            :param urls: an iterable containing all the urls to purge as absolute \
                          paths (i.e. ``/index.html``)
-            :param multiprocess: if ``True`` every request will be done concurrently 
+            :param processes: if true every request will be done concurrently \
                          using the ``multiprocessing`` module
+            :type processes: boolean
         """
 
         if isinstance(urls, basestring) or getattr(urls, '__iter__', False):
            urls = tuple(urls)
         
-        for url in urls:
-            if multiprocess:
-                p = multiprocessing.Process(target=self, args=(url,))
-                p.start()
-                self.processes.append(p)
-            else:
-                self(url)
-    
-    def join_all(self):
-        """ Joins all the processess spawned during the purge request. """
-        self.log.debug("Joining %d processes", len(self.processes))
-        for p in self.processes:
-            p.join()
-        self.processes = []
+        if multiprocess:
 
-    def __del__(self):
-        self.join_all()
+            queue = multiprocessing.Queue()
+            processes = [ multiprocessing.Process(target=self.__purge, args=(queue,url,)) for url in urls ]
+            for p in processes:
+                p.start()
+            
+            results = [ queue.get() for u in urls ]
+
+            for p in processes:
+                p.join()
+
+            return results
+            
+        else:
+            for url in urls:
+                return self.__purge(url)
