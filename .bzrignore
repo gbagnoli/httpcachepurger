@@ -1,2 +1,3 @@
 ./varnishpurge.egg-info
 ./dist
+./doc/build
