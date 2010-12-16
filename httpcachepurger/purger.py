@@ -5,21 +5,24 @@ import multiprocessing
 
 from httplib import HTTPConnection
 
-__all__ = [ 'VarnishPurgeClient'] 
+__all__ = [ 'HTTPCachePurger'] 
 
-class VarnishPurgeClient(object):
-    """ A very simple HTTP PURGE client with basic multiprocessing support """
+class HTTPCachePurger(object):
+    """ A very simple HTTP PURGE client with basic multiprocessing support 
+
+        :param hostname: the hostname used as ``Host`` request header.
+        :param server: the address (DNS or IP) of the server to connect to. \
+                If ``None``, the ``hostname`` will be resolved and used instead
+        :param port: the port of the cache server
+        :param strict: if ``True`` causes BadStatusLine to be raised if the status \
+                line can't be parsed as a valid HTTP/1.0 or 1.1 status line. \
+                See the httplib documentation for more info.
+        :param timeout: Connection timeout in seconds.
+
+    """
 
     def __init__ (self, hostname, server=None, port=80, strict=False, timeout=10):
-        """ Create a new VarnishPurgeClient object. 
-        hostname - The hostname used as Host: request header.
-        server - The address of the server to connect to. If None, the hostname 
-        is used instead.
-        port - The port to connect to (default 80)
-        strict - causes BadStatusLine to be raised if the status line can't be parsed as
-        a valid HTTP/1.0 or 1.1 status line. See the httplib documentation for more.
-        timeout - Connection timeout in seconds.
-        """
+        """ Create a new VarnishPurgeClient object. """ 
         self.log = logging.getLogger(__name__)
         self.hostname = hostname
         self.server = server if server else self.hostname
@@ -37,8 +40,11 @@ class VarnishPurgeClient(object):
 
     def purge(self, urls, multiprocess=True):
         """ Request the server to purge all the given urls
-        urls - an iterable containing all the urls to purge as absolute paths (i.e. /index.html)
-        multiprocess - if True every request will be done concurrently using the multiprocessing module
+
+            :param urls: an iterable containing all the urls to purge as absolute 
+                         paths (i.e. ``/index.html``)
+            :param multiprocess: if ``True`` every request will be done concurrently 
+                         using the ``multiprocessing`` module
         """
 
         if isinstance(urls, basestring) or getattr(urls, '__iter__', False):

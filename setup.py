@@ -1,14 +1,14 @@
 from setuptools import setup
 
 setup(
-    name='varnishpurge',
-    version='0.1.2',
+    name='httpcachepurger',
+    version='0.1.3',
     author='Giacomo Bagnoli',
     author_email='info@asidev.com',
-    packages=['varnishpurge'],
-    url='https://code.asidev.net/projects/varnishpurge',
+    packages=['httpcachepurger'],
+    url='https://code.asidev.net/projects/httpcachepurger',
     license='LICENSE.txt',
-    description='Varnish HTTP purge library',
+    description='HTTP Cache purger client library',
     long_description=open('README.txt').read(),
     install_requires = [ ],
     test_suite = 'nose.collector',
@@ -25,7 +25,7 @@ setup(
     ],
     entry_points= {
         'console_scripts' : [
-            'vpurge = varnishpurge.vpurge:main'
+            'cpurger = httpcachepurger.cmdline:main'
         ]
     }
 )
