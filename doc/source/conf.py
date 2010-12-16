@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# varnishpurge documentation build configuration file, created by
+# httpcachepurger documentation build configuration file, created by
 # sphinx-quickstart on Wed Dec 15 17:55:31 2010.
 #
 # This file is execfile()d with the current directory set to its containing dir.
@@ -40,7 +40,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'varnishpurge'
+project = u'httpcachepurger'
 copyright = u'2010, Asidev s.r.l.'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -164,7 +164,7 @@ html_static_path = ['_static']
 #html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'varnishpurgedoc'
+htmlhelp_basename = 'httpcachepurgerdoc'
 
 
 # -- Options for LaTeX output --------------------------------------------------
@@ -178,7 +178,7 @@ htmlhelp_basename = 'varnishpurgedoc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'varnishpurge.tex', u'varnishpurge Documentation',
+  ('index', 'httpcachepurger.tex', u'httpcachepurger Documentation',
    u'Giacomo Bagnoli', 'manual'),
 ]
 
@@ -211,7 +211,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'varnishpurge', u'varnishpurge Documentation',
+    ('index', 'httpcachepurger', u'httpcachepurger Documentation',
      [u'Giacomo Bagnoli'], 1)
 ]
 
