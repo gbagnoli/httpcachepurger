@@ -7,7 +7,7 @@ from httpcachepurger import HTTPCachePurger
 
 def get_parser(host, port, strict, timeout):
     """ Setup parser options """
-    parser = OptionParser(usage="%prog [-h|--help] [options]")
+    parser = OptionParser(usage="%prog [-h|--help] [options] <url> [<url> [...]]")
     parser.add_option('-d', '--hostname', dest='hostname',
                       help='purge cache for host HOST', metavar='HOST',
                       default=host)
@@ -27,6 +27,9 @@ def get_parser(host, port, strict, timeout):
                       'cannot be parsed as a valid HTTP/1.0 or 1.1 ' + \
                       'status line',
                       metavar="STRICT", default=strict)
+    parser.add_option("-M", "--no-multiprocess", action="store_false", default=True,
+                      help="Do not use multiprocessing (i.e. purge url sequentially)",
+                     dest="multiprocessing")
     parser.add_option("-v", "--verbose", action="count", help="Increase " +\
                       "verbosity. Can be specified multiple times", dest="verbosity")
 
@@ -43,6 +46,6 @@ def main():
         parser.error("No urls to purge")
     client = HTTPCachePurger(opts.hostname, opts.server, opts.port, 
                              opts.strict, opts.timeout)
-    results = client.purge(args, True)
+    results = client.purge(args, opts.multiprocessing)
     for result in results:
         logging.debug(result)

@@ -2,8 +2,10 @@
 
 import logging
 import multiprocessing
+import socket
 
 from httplib import HTTPConnection
+from makako.containers import Storage
 
 __all__ = [ 'HTTPCachePurger'] 
 
@@ -33,8 +35,14 @@ class HTTPCachePurger(object):
     def __purge(self, queue, url):
         self.log.info("PURGE %s Hostname: %s @%s", url, self.hostname, self.server)
         conn = HTTPConnection(self.server, self.port, self.strict, self.timeout)
-        conn.request("PURGE", url, headers={"Host" : self.hostname})
-        response = conn.getresponse()
+        try:
+            conn.request("PURGE", url, headers={"Host" : self.hostname})
+            response = conn.getresponse()
+        except socket.error as e:
+            response = Storage()
+            response.status = 0
+            response.reason = str(e)
+
         self.log.debug("'%s': %s %s", url, response.status, response.reason)
         queue.put((url, response.status, response.reason))
 
@@ -48,12 +56,13 @@ class HTTPCachePurger(object):
             :type processes: boolean
         """
 
+        self.log.debug("Starting purge of urls %s , multiprocessing: %s", urls, multiprocess)
         if isinstance(urls, basestring) or getattr(urls, '__iter__', False):
            urls = tuple(urls)
         
+        queue = multiprocessing.Queue()
         if multiprocess:
 
-            queue = multiprocessing.Queue()
             processes = [ multiprocessing.Process(target=self.__purge, args=(queue,url,)) for url in urls ]
             for p in processes:
                 p.start()
@@ -64,7 +73,12 @@ class HTTPCachePurger(object):
                 p.join()
 
             return results
-            
-        else:
-            for url in urls:
-                return self.__purge(url)
+        
+        results = [ ]
+        for url in urls:
+            self.__purge(queue, url)
+            results.append(queue.get())
+
+        return results
+
+

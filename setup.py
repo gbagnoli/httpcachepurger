@@ -10,7 +10,7 @@ setup(
     license='LICENSE.txt',
     description='HTTP Cache purger client library',
     long_description=open('README.txt').read(),
-    install_requires = [ ],
+    install_requires = [ 'Makako' ],
     test_suite = 'nose.collector',
     tests_require = [ "Nose", "coverage" ],
     classifiers  = [
