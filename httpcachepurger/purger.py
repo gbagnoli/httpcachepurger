@@ -51,7 +51,7 @@ class HTTPCachePurger(object):
 
             :param urls: an iterable containing all the urls to purge as absolute \
                          paths (i.e. ``/index.html``)
-            :param processes: if true every request will be done concurrently \
+            :param multiprocess: if true every request will be done concurrently \
                          using the ``multiprocessing`` module
             :type processes: boolean
         """
