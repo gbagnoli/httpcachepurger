@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='httpcachepurger',
-    version='0.1.3',
+    version='0.1.4',
     author='Giacomo Bagnoli',
     author_email='info@asidev.com',
     packages=['httpcachepurger'],
