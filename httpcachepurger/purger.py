@@ -1,16 +1,20 @@
 #!/usr/bin/env python
 
+import collections
 import logging
 import multiprocessing
 import socket
 
 from httplib import HTTPConnection
-from makako.containers import Storage
 
-__all__ = [ 'HTTPCachePurger'] 
+__all__ = [ 'HTTPCachePurger']
+
+
+FakeResponse = collections.namedtuple('FakeResponse', ['status', 'reason'])
+
 
 class HTTPCachePurger(object):
-    """ A very simple HTTP PURGE client with basic multiprocessing support 
+    """ A very simple HTTP PURGE client with basic multiprocessing support
 
         :param hostname: the hostname used as ``Host`` request header.
         :param server: the address (DNS or IP) of the server to connect to. \
@@ -24,7 +28,7 @@ class HTTPCachePurger(object):
     """
 
     def __init__ (self, hostname, server=None, port=80, strict=False, timeout=10):
-        """ Create a new VarnishPurgeClient object. """ 
+        """ Create a new VarnishPurgeClient object. """
         self.log = logging.getLogger(__name__)
         self.hostname = hostname
         self.server = server if server else self.hostname
@@ -39,9 +43,7 @@ class HTTPCachePurger(object):
             conn.request("PURGE", url, headers={"Host" : self.hostname})
             response = conn.getresponse()
         except socket.error as e:
-            response = Storage()
-            response.status = 0
-            response.reason = str(e)
+            response = FakeResponse(status=0, reason=str(e))
 
         self.log.debug("'%s': %s %s", url, response.status, response.reason)
         queue.put((url, response.status, response.reason))
@@ -59,21 +61,21 @@ class HTTPCachePurger(object):
         self.log.debug("Starting purge of urls %s , multiprocessing: %s", urls, multiprocess)
         if isinstance(urls, basestring) or getattr(urls, '__iter__', False):
            urls = tuple(urls)
-        
+
         queue = multiprocessing.Queue()
         if multiprocess:
 
             processes = [ multiprocessing.Process(target=self.__purge, args=(queue,url,)) for url in urls ]
             for p in processes:
                 p.start()
-            
+
             results = [ queue.get() for u in urls ]
 
             for p in processes:
                 p.join()
 
             return results
-        
+
         results = [ ]
         for url in urls:
             self.__purge(queue, url)

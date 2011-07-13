@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='httpcachepurger',
-    version='0.1.4',
+    version='0.1.5',
     author='Giacomo Bagnoli',
     author_email='info@asidev.com',
     packages=['httpcachepurger'],
@@ -10,7 +10,7 @@ setup(
     license='LICENSE.txt',
     description='HTTP Cache purger client library',
     long_description=open('README.txt').read(),
-    install_requires = [ 'Makako' ],
+    install_requires = [ ],
     test_suite = 'nose.collector',
     tests_require = [ "Nose", "coverage" ],
     classifiers  = [
