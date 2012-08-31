@@ -8,6 +8,9 @@ from httpcachepurger import HTTPCachePurger
 def get_parser(host, port, strict, timeout):
     """ Setup parser options """
     parser = OptionParser(usage="%prog [-h|--help] [options] <url> [<url> [...]]")
+    parser.add_option("-m", '--method', dest="method",
+                      help="Cache purging method to use",
+                      choices=["ban", "purge"], default="ban")
     parser.add_option('-d', '--hostname', dest='hostname',
                       help='purge cache for host HOST', metavar='HOST',
                       default=host)
@@ -44,8 +47,10 @@ def main():
     logging.basicConfig(level=level)
     if not args:
         parser.error("No urls to purge")
+
     client = HTTPCachePurger(opts.hostname, opts.server, opts.port, 
                              opts.strict, opts.timeout)
-    results = client.purge(args, opts.multiprocessing)
+    meth = getattr(client, opts.method)
+    results = meth(args, opts.multiprocessing)
     for result in results:
         logging.debug(result)
