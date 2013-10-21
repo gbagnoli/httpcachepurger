@@ -1,0 +1,4 @@
+dist
+doc/build
+httpcachepurger.egg-info
+*.pyc
